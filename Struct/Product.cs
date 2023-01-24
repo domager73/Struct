@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-namespace NewProduct;
+namespace NewStudent;
 
-struct Product
+struct Student
 {
     public int Id;
     public string Name;
-    public string Contractor;
-    public DateTime DeliveryDate;
-    public int Prise;
-    public int SelfLifesDays;
-    public int Balanse;
+    public string SurName;
+    public int Mark;
+    public int Oge;
+    public int Ege;
+    public int Age;
 }
