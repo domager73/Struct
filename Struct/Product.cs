@@ -8,7 +8,7 @@ struct Student
     public int Id;
     public string Name;
     public string SurName;
-    public int Mark;
+    public int AverageScore;
     public int Oge;
     public int Ege;
     public int Age;

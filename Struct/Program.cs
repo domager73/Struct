@@ -1,4 +1,5 @@
 ﻿using NewStudent;
+using System.Net.Http.Headers;
 
 int Current_ID = 0;
 
@@ -16,7 +17,6 @@ static void ResizeArray(ref Student[] students, int newLength)
 
     students = newArray;
 }
-
 # endregion 
 
 #region tools Methods
@@ -113,16 +113,13 @@ static Student CreateStudent(ref int Current_ID, bool inNewId)
     Console.Write("Enter the student's surname : ");
     student.SurName = Console.ReadLine();
 
-    Console.Write("Enter the student's age: ");
-    student.Age = int.Parse(Console.ReadLine());
+    student.Age = InputInt("Enter the student's age: ");
 
-    Console.Write("Enter Oge Points: ");
-    student.Oge = int.Parse(Console.ReadLine());
+    student.Oge = InputInt("Enter Oge Points: ");
 
-    Console.Write("Enter Ege Points: ");
-    student.Ege = int.Parse(Console.ReadLine());
+    student.Ege = InputInt("Enter Ege Points: ");
 
-    student.Mark = (student.Ege + student.Oge) / 2;
+    student.AverageScore = (student.Ege + student.Oge) / 2;
 
     return student;
 }
@@ -131,7 +128,7 @@ Student CreateEmptyStudent()
 {
     Student student;
     student.Id = 0;
-    student.Mark = 0;
+    student.AverageScore = 0;
     student.Age = 0;
     student.Oge = 0;
     student.Ege = 0;
@@ -145,13 +142,13 @@ Student CreateEmptyStudent()
 static void PrintStudent(Student student)
 {
     Console.WriteLine("{0, -3}{1, -15}{2, -15}{3, -5}{4, -5}{5, -5}{6, -4}", student.Id, student.Name, student.SurName,
-       student.Age, student.Mark, student.Oge, student.Ege);
+       student.Age, student.Oge, student.Ege, student.AverageScore);
 }
 
 static void PrintManyStudents(Student[] students)
 {
-    Console.WriteLine("{0, -3}{1, -15}{2, -15}{3, -5}{4, -5}{5, -5}{6, -4}", "Id", "Name", "Surname", "Age",
-    "Mark", "Oge", "Ege");
+    Console.WriteLine("{0, -3}{1, -15}{2, -15}{3, -5}{4, -5}{5, -5}{6, -4}", "Id", "Name", "Surname", "Age", "Oge", "Ege",
+    "Mark");
     if (students == null)
     {
         Console.WriteLine("Array is empty");
@@ -212,13 +209,15 @@ Student[] FindStudentLeaveSchool(Student[] students)
         if (students[i].Oge > minPassingScore)
         {
             AddNewStudent(ref findStudents, students[i]);
+
+            Current_ID--;
         }
     }
 
     return findStudents;
 }
 
-Student[] FindStudentsFromMintoMaxEge(Student[] students, Student student, int minEge, int maxEge)
+Student[] FindStudentsFromMintoMaxEge(Student[] students, int minEge, int maxEge)
 {
     Student[] findStudents = null;
 
@@ -232,6 +231,89 @@ Student[] FindStudentsFromMintoMaxEge(Student[] students, Student student, int m
 
     return findStudents;
 }
+
+bool CheckemptyMas(Student[] students)
+{
+    if (students == null)
+    {
+        return false;
+    }
+    else
+    {
+        return true;
+    }
+}
+
+void SortStudentsByAverageScore(Student[] students, bool asc)
+{
+    Student temp;
+    bool sort;
+    int offset = 0;
+    int idCount = 1;
+
+    do
+    {
+        sort = true;
+
+        for (int i = 0; i < students.Length - 1 - offset; i++)
+        {
+            bool compareResult;
+
+            if (asc)
+            {
+                compareResult = students[i + 1].AverageScore < students[i].AverageScore;
+            }
+            else
+            {
+                compareResult = students[i + 1].AverageScore > students[i].AverageScore;
+            }
+
+            if (compareResult)
+            {
+                temp = students[i];
+                students[i] = students[i + 1];
+                students[i + 1] = temp;
+
+                idCount++;
+                sort = false;
+            }
+        }
+
+        offset++;
+
+    } while (!sort);
+}
+
+void SortStudentsByID(Student[] students)
+{
+    Student temp;
+    bool sort;
+    int offset = 0;
+    int idCount = 1;
+
+    do
+    {
+        sort = true;
+
+        for (int i = 0; i < students.Length - 1 - offset; i++)
+        {
+            bool compareResult;
+
+            if (compareResult = students[i + 1].AverageScore < students[i].AverageScore)
+            {
+                temp = students[i];
+                students[i] = students[i + 1];
+                students[i + 1] = temp;
+
+                idCount++;
+                sort = false;
+            }
+        }
+
+        offset++;
+
+    } while (!sort);
+}
 #endregion
 
 #region Interfes Method
@@ -244,9 +326,24 @@ static void PrintMenu()
     Console.WriteLine("4. Update student by id");
     Console.WriteLine("5. New student you position");
     Console.WriteLine("6. Print student by id");
-    Console.WriteLine("7. Find student from min to max Oge");
-    Console.WriteLine("8. Find student from min to max Ege");
-    Console.WriteLine("9. Students who have passed the school");
+    Console.WriteLine("7. Sort students");
+    Console.WriteLine("8. Search from students");
+    Console.WriteLine("0. Exit");
+}
+
+void PrintSearchMenu()
+{
+    Console.WriteLine("1. Find student from min to max Oge");
+    Console.WriteLine("2. Find student from min to max Ege");
+    Console.WriteLine("3. Students who have passed the school");
+    Console.WriteLine("0. Exit");
+}
+
+void PrintSortMenu()
+{
+    Console.WriteLine("1. Sort by ascending average score");
+    Console.WriteLine("2. Sort by decreasing average score");
+    Console.WriteLine("3. Bring everything back");
     Console.WriteLine("0. Exit");
 }
 
@@ -257,12 +354,13 @@ static int InputInt(string message)
 
     do
     {
-        Console.WriteLine(message);
+        Console.Write(message);
         inputReault = int.TryParse(Console.ReadLine(), out number);
     } while (!inputReault);
 
     return number;
 }
+
 #endregion
 
 # region CRUD Method
@@ -377,13 +475,6 @@ while (runProgram)
 
     switch (menuPoint)
     {
-        case 1:
-            {
-                Student student = CreateStudent(ref Current_ID, true);
-                AddNewStudent(ref students, student);
-                continue;
-            }
-
         case 0:
             {
                 Console.WriteLine("Program will be finish");
@@ -392,101 +483,268 @@ while (runProgram)
                 break;
             }
 
+        case 1:
+            {
+                Student student = CreateStudent(ref Current_ID, true);
+                AddNewStudent(ref students, student);
+                continue;
+            }
+
         case 2:
             {
-                int id = InputInt("Ibput id for delete: ");
-                DeleteStudentById(ref students, id);
+                if (CheckemptyMas(students))
+                {
+                    int id = InputInt("Ibput id for delete: ");
+                    DeleteStudentById(ref students, id);
+                }
+                else
+                {
+                    Console.WriteLine("Empty database");
+                }
+
                 break;
             }
 
         case 3:
             {
-                ClearAllStudents(ref students);
+                if (CheckemptyMas(students))
+                {
+                    ClearAllStudents(ref students);
+                }
+                else
+                {
+                    Console.WriteLine("Already an empty database");
+                }
+
                 break;
             }
 
         case 4:
             {
-                int id = InputInt("Ibput id for update: ");
-                Student student = CreateStudent(ref Current_ID, false);
-                updateStudentById(students, id, student);
+                if (CheckemptyMas(students))
+                {
+                    int id = InputInt("Ibput id for update: ");
+                    Student student = CreateStudent(ref Current_ID, false);
+
+                    updateStudentById(students, id, student);
+                }
+                else
+                {
+                    Console.WriteLine("Empty database");
+                }
                 break;
             }
         case 5:
             {
-                int position = InputInt("Input position for insert");
+                if (CheckemptyMas(students))
+                {
+                    int position = InputInt("Input position for insert");
 
-                Student student = CreateStudent(ref Current_ID, true);
-                InsertStudentIntoPosition(ref students, position, student);
+                    Student student = CreateStudent(ref Current_ID, true);
+                    InsertStudentIntoPosition(ref students, position, student);
+                    break;
+                }
+                else
+                {
+                    Console.WriteLine("Empty database");
+                }
+
                 break;
             }
 
         case 6:
             {
-                int id = InputInt("Enter id student");
-                Student student;
-                bool isFinded = FindStudentById(students, id, out student);
-
-                if (isFinded)
+                if (CheckemptyMas(students))
                 {
-                    PrintStudent(student);
+                    int id = InputInt("Enter id student");
+                    Student student;
+                    bool isFinded = FindStudentById(students, id, out student);
+
+                    if (isFinded)
+                    {
+                        PrintStudent(student);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Print is impossible. Element not fiend");
+                    }
                 }
                 else
                 {
-                    Console.WriteLine("Print is impossible. Element not fiend");
+                    Console.WriteLine("Empty database");
+                }
+
+                break;
+            }
+
+        case 7:
+            {
+                if (CheckemptyMas(students))
+                {
+                    bool runSortMenu = true;
+
+                    while (runSortMenu)
+                    {
+                        Console.Clear();
+                        PrintManyStudents(students);
+
+                        PrintSortMenu();
+                        int menuSort = InputInt("Input sort point: ");
+
+                        switch (menuSort)
+                        {
+                            case 0:
+                                {
+                                    Console.WriteLine("Exit the search menu ");
+
+                                    runSortMenu = false;
+                                    break;
+                                }
+                            case 1:
+                                {
+                                    SortStudentsByAverageScore(students, true);
+
+                                    break;
+                                }
+
+                            case 2:
+                                {
+                                    SortStudentsByAverageScore(students, false);
+
+                                    break;
+                                }
+                            case 3:
+                                {
+                                    SortStudentsByID(students);
+
+                                    break;
+                                }
+
+                        }
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Empty database");
                 }
                 break;
             }
 
-
-        case 7:
+        case 8:
             {
-                int minInOge = GetMinOge(students);
+                if (CheckemptyMas(students))
+                {
+                    bool runSearchMenu = true;
 
-                int maxInOge = GetMaxOge(students);
+                    while (runSearchMenu)
+                    {
+                        Console.Clear();
+                        PrintManyStudents(students);
 
-                Console.WriteLine($"Input min and max Oge from {minInOge} to {maxInOge}");
+                        PrintSearchMenu();
+                        int menuSearch = InputInt("Input search point: ");
 
-                int minOge = InputInt("Min Oge: ");
+                        switch (menuSearch)
+                        {
+                            case 0:
+                                {
+                                    Console.WriteLine("Exit the search menu ");
 
-                int maxOge = InputInt("Min Ege: ");
+                                    runSearchMenu = false;
+                                    break;
+                                }
 
-                Student[] findedStudents = FindStudentsFromMintoMaxOge(students, minOge, maxOge);
+                            case 1:
+                                {
+                                    if (CheckemptyMas(students))
+                                    {
+                                        int minInOge = GetMinOge(students);
 
-                Console.Clear();
-                PrintManyStudents(findedStudents);
+                                        int maxInOge = GetMaxOge(students);
+
+                                        Console.WriteLine($"Input min and max Oge from {minInOge} to {maxInOge}");
+
+                                        int minOge = InputInt("Min Oge: ");
+
+                                        int maxOge = InputInt("Min Ege: ");
+
+                                        Student[] findedStudents = FindStudentsFromMintoMaxOge(students, minOge, maxOge);
+
+                                        Console.Clear();
+                                        PrintManyStudents(findedStudents);
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("Empty database");
+                                    }
+
+                                    Console.ReadLine();
+
+                                    break;
+                                }
+                            case 2:
+                                {
+                                    if (CheckemptyMas(students))
+                                    {
+                                        int minInEge = GetMinEge(students);
+
+                                        int maxInEge = GetMaxEge(students);
+
+                                        Console.WriteLine($"Input min and max Oge from {minInEge} to {maxInEge}");
+
+                                        int minEge = InputInt("Min Ege: ");
+
+                                        int maxEge = InputInt("Min Ege: ");
+
+                                        Student[] findedStudents = FindStudentsFromMintoMaxEge(students, minEge, maxEge);
+
+                                        Console.Clear();
+                                        PrintManyStudents(findedStudents);
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("Empty database");
+                                    }
+
+                                    Console.ReadLine();
+
+                                    break;
+                                }
+
+                            case 3:
+                                {
+                                    if (CheckemptyMas(students))
+                                    {
+                                        Student[] findedStudents = FindStudentLeaveSchool(students);
+
+                                        Console.Clear();
+
+                                        PrintManyStudents(findedStudents);
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("Empty database");
+                                    }
+
+                                    Console.ReadLine();
+
+                                    break;
+                                }
+
+                            default:
+                                {
+                                    Console.WriteLine("Unknown command");
+                                    break;
+                                }
+                        }
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Empty database");
+                }
                 break;
             }
-        case 8: 
-            {
-                int minInEge = GetMinEge(students);
-
-                int maxInEge = GetMaxEge(students);
-
-                Console.WriteLine($"Input min and max Oge from {minInEge} to {maxInEge}");
-
-                int minEge = InputInt("Min Ege: ");
-
-                int maxEge = InputInt("Min Ege: ");
-
-                Student[] findedStudents = FindStudentsFromMintoMaxEge(students, minEge, maxEge);
-
-                Console.Clear();
-                PrintManyStudents(findedStudents);
-                break;
-            }
-
-        case 9: 
-            {
-                Student[] findedStudents = FindStudentLeaveSchool(students);
-
-                Console.Clear();
-
-                PrintManyStudents(findedStudents);
-
-                break;
-            }
-
         default:
             {
                 Console.WriteLine("Unknown command");
