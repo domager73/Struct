@@ -1,4 +1,6 @@
 ﻿using NewStudent;
+using System.ComponentModel;
+using System.IO;
 
 int Current_ID = 0;
 
@@ -77,7 +79,7 @@ int GetMaxEge(Student[] students)
 }
 
 
-static int GetIndexById(Student[] students, int id)
+int GetIndexById(Student[] students, int id)
 {
     if (students == null)
     {
@@ -93,7 +95,7 @@ static int GetIndexById(Student[] students, int id)
     return -1;
 }
 
-static Student CreateStudent(ref int Current_ID, bool inNewId)
+Student CreateStudent(ref int Current_ID, bool inNewId)
 {
     Student student;
 
@@ -133,18 +135,18 @@ Student CreateEmptyStudent()
     student.Ege = 0;
     student.Name = "";
     student.SurName = "";
-    
+
     return student;
 
 }
 
-static void PrintStudent(Student student)
+void PrintStudent(Student student)
 {
     Console.WriteLine("{0, -3}{1, -15}{2, -15}{3, -5}{4, -5}{5, -5}{6, -10}", student.Id, student.Name, student.SurName,
        student.Class, student.Oge, student.Ege, student.AverageScore);
 }
 
-static void PrintManyStudents(Student[] students)
+void PrintManyStudents(Student[] students)
 {
     Console.WriteLine("{0, -3}{1, -15}{2, -15}{3, -5}{4, -5}{5, -5}{6, -4}", "Id", "Name", "Surname", "Age", "Oge", "Ege",
     "AverageScore");
@@ -164,6 +166,77 @@ static void PrintManyStudents(Student[] students)
         }
     }
     Console.WriteLine("-------------------");
+}
+void PrintManyStudentsToFile(Student[] students, string fileName)
+{
+    StreamWriter writer = new StreamWriter(fileName);
+
+    writer.WriteLine("{0, -3}{1, -15}{2, -15}{3, -5}{4, -5}{5, -5}{6, -4}", "Id", "Name", "Surname", "Class", "Oge", "Ege",
+    "AverageScore");
+    if (students == null)
+    {
+        writer.WriteLine("Array is empty");
+    }
+    else if (students.Length == 0)
+    {
+        writer.WriteLine("Array is empty");
+    }
+    else
+    {
+        for (int i = 0; i < students.Length; i++)
+        {
+            writer.WriteLine("{0, -3}{1, -15}{2, -15}{3, -5}{4, -5}{5, -5}{6, -10}", students[i].Id, students[i].Name, students[i].SurName,
+                                students[i].Class, students[i].Oge, students[i].Ege, students[i].AverageScore);
+        }
+    }
+
+    writer.Close();
+}
+
+void SaveManyStudentsToFile(Student[] students, string fileName, int Current_ID)
+{
+    StreamWriter write = new StreamWriter(fileName);
+
+    write.WriteLine(students.Length);
+    write.WriteLine(Current_ID);
+
+    for (int i = 0; i < students.Length; i++)
+    {
+        write.WriteLine(students[i].Id);
+        write.WriteLine(students[i].Name);
+        write.WriteLine(students[i].SurName);
+        write.WriteLine(students[i].Class);
+        write.WriteLine(students[i].Oge);
+        write.WriteLine(students[i].Ege);
+        write.WriteLine(students[i].AverageScore);
+    }
+
+    write.Close();
+}
+
+Student[] ReadManyStudentsFromFile(string nameFile) 
+{
+    StreamReader reader = new StreamReader(nameFile);
+
+    int countProducts = int.Parse(reader.ReadLine());
+    Current_ID= int.Parse(reader.ReadLine());
+
+    Student[] students = new Student[countProducts];
+
+    for (int i = 0; i < students.Length; i++)
+    {
+        students[i].Id = int.Parse(reader.ReadLine());
+        students[i].Name = reader.ReadLine();
+        students[i].SurName = reader.ReadLine();
+        students[i].Class = int.Parse(reader.ReadLine());
+        students[i].Oge = int.Parse(reader.ReadLine());
+        students[i].Ege = int.Parse(reader.ReadLine());
+        students[i].AverageScore = int.Parse(reader.ReadLine());
+    }
+
+    reader.Close();
+
+    return students;
 }
 
 bool FindStudentById(Student[] students, int id, out Student student)
@@ -359,16 +432,18 @@ void SortStudentsByClass(Student[] students, bool asc)
 
 #region Interfes Method
 
-static void PrintMenu()
+void PrintMenu()
 {
     Console.WriteLine("1. Add new student");
-    Console.WriteLine("2. Delete student by id");
-    Console.WriteLine("3. Clear all students");
-    Console.WriteLine("4. Update student by id");
-    Console.WriteLine("5. New student you position");
-    Console.WriteLine("6. Print student by id");
-    Console.WriteLine("7. Sort students");
-    Console.WriteLine("8. Search from students");
+    Console.WriteLine("2. Clear all students");
+    Console.WriteLine("3. Update student by id");
+    Console.WriteLine("4. New student you position");
+    Console.WriteLine("5. Print student by id");
+    Console.WriteLine("6. Sort students");
+    Console.WriteLine("7. Search from students");
+    Console.WriteLine("8. Print students to txt file");
+    Console.WriteLine("9. Save students to data file");
+    Console.WriteLine("10. Read students to data file");
     Console.WriteLine("0. Exit");
 }
 
@@ -390,7 +465,7 @@ void PrintSortMenu()
     Console.WriteLine("0. Exit");
 }
 
-static int InputInt(string message)
+int InputInt(string message)
 {
     bool inputReault;
     int number;
@@ -408,12 +483,12 @@ static int InputInt(string message)
 
 # region CRUD Method
 
-static void ClearAllStudents(ref Student[] students)
+void ClearAllStudents(ref Student[] students)
 {
     students = null;
 }
 
-static void updateStudentById(Student[] students, int id, Student student)
+void updateStudentById(Student[] students, int id, Student student)
 {
     int indexUpdate = GetIndexById(students, id);
 
@@ -426,31 +501,6 @@ static void updateStudentById(Student[] students, int id, Student student)
     student.Id = students[indexUpdate].Id;
 
     students[indexUpdate] = student;
-}
-
-static void DeleteStudentById(ref Student[] students, int id)
-{
-    int indexDelete = GetIndexById(students, id);
-
-    if (indexDelete == -1)
-    {
-        Console.WriteLine("Delete is imposible. Element not found");
-        return;
-    }
-
-    Student[] newStudents = new Student[students.Length - 1];
-    int newI = 0;
-
-    for (int i = 0; i < newStudents.Length; i++)
-    {
-        if (i != indexDelete)
-        {
-            newStudents[newI] = students[i];
-            newI++;
-        }
-    }
-
-    students = newStudents;
 }
 
 void AddNewStudent(ref Student[] students, Student student)
@@ -469,7 +519,7 @@ void AddNewStudent(ref Student[] students, Student student)
     students[students.Length - 1] = student;
 }
 
-static void InsertStudentIntoPosition(ref Student[] students, int position, Student student)
+void InsertStudentIntoPosition(ref Student[] students, int position, Student student)
 {
     if (students == null)
     {
@@ -537,21 +587,6 @@ while (runProgram)
             {
                 if (CheckEmptyMas(students))
                 {
-                    int id = InputInt("Ibput id for delete: ");
-                    DeleteStudentById(ref students, id);
-                }
-                else
-                {
-                    Console.WriteLine("Empty database");
-                }
-
-                break;
-            }
-
-        case 3:
-            {
-                if (CheckEmptyMas(students))
-                {
                     ClearAllStudents(ref students);
                 }
                 else
@@ -562,7 +597,7 @@ while (runProgram)
                 break;
             }
 
-        case 4:
+        case 3:
             {
                 if (CheckEmptyMas(students))
                 {
@@ -577,7 +612,7 @@ while (runProgram)
                 }
                 break;
             }
-        case 5:
+        case 4:
             {
                 if (CheckEmptyMas(students))
                 {
@@ -595,7 +630,7 @@ while (runProgram)
                 break;
             }
 
-        case 6:
+        case 5:
             {
                 if (CheckEmptyMas(students))
                 {
@@ -621,7 +656,7 @@ while (runProgram)
                 break;
             }
 
-        case 7:
+        case 6:
             {
                 if (CheckEmptyMas(students))
                 {
@@ -671,7 +706,7 @@ while (runProgram)
                                     break;
                                 }
 
-                            case 5: 
+                            case 5:
                                 {
                                     SortStudentsByClass(students, false);
 
@@ -688,7 +723,7 @@ while (runProgram)
                 break;
             }
 
-        case 8:
+        case 7:
             {
                 if (CheckEmptyMas(students))
                 {
@@ -803,6 +838,31 @@ while (runProgram)
                 }
                 break;
             }
+
+        case 8:
+            {
+                Console.Write("Iput file name: ");
+
+                PrintManyStudentsToFile(students, Console.ReadLine());
+                break;
+            }
+        case 9: 
+            {
+                Console.Write("Iput file name: ");
+
+                SaveManyStudentsToFile(students, Console.ReadLine(), Current_ID);
+                break;
+            }
+
+        case 10:
+            {
+                Console.Write("Iput file name: ");
+                string fileName = Console.ReadLine();
+
+                students = ReadManyStudentsFromFile(fileName);
+                break;
+            }
+
         default:
             {
                 Console.WriteLine("Unknown command");

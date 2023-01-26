@@ -5,6 +5,8 @@ namespace NewStudent;
 
 struct Student
 {
+    public static int Current_ID = 0;
+
     public int Id;
     public string Name;
     public string SurName;
