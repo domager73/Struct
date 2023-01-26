@@ -11,5 +11,5 @@ struct Student
     public int AverageScore;
     public int Oge;
     public int Ege;
-    public int Age;
+    public int Class;
 }

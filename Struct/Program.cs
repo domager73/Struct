@@ -1,5 +1,4 @@
 ﻿using NewStudent;
-using System.Net.Http.Headers;
 
 int Current_ID = 0;
 
@@ -113,7 +112,7 @@ static Student CreateStudent(ref int Current_ID, bool inNewId)
     Console.Write("Enter the student's surname : ");
     student.SurName = Console.ReadLine();
 
-    student.Age = InputInt("Enter the student's age: ");
+    student.Class = InputInt("Enter the student's class: ");
 
     student.Oge = InputInt("Enter Oge Points: ");
 
@@ -129,26 +128,26 @@ Student CreateEmptyStudent()
     Student student;
     student.Id = 0;
     student.AverageScore = 0;
-    student.Age = 0;
+    student.Class = 0;
     student.Oge = 0;
     student.Ege = 0;
     student.Name = "";
     student.SurName = "";
-
+    
     return student;
 
 }
 
 static void PrintStudent(Student student)
 {
-    Console.WriteLine("{0, -3}{1, -15}{2, -15}{3, -5}{4, -5}{5, -5}{6, -4}", student.Id, student.Name, student.SurName,
-       student.Age, student.Oge, student.Ege, student.AverageScore);
+    Console.WriteLine("{0, -3}{1, -15}{2, -15}{3, -5}{4, -5}{5, -5}{6, -10}", student.Id, student.Name, student.SurName,
+       student.Class, student.Oge, student.Ege, student.AverageScore);
 }
 
 static void PrintManyStudents(Student[] students)
 {
     Console.WriteLine("{0, -3}{1, -15}{2, -15}{3, -5}{4, -5}{5, -5}{6, -4}", "Id", "Name", "Surname", "Age", "Oge", "Ege",
-    "Mark");
+    "AverageScore");
     if (students == null)
     {
         Console.WriteLine("Array is empty");
@@ -376,7 +375,7 @@ static void updateStudentById(Student[] students, int id, Student student)
 
     if (indexUpdate == -1)
     {
-        Console.WriteLine("Dele is imposible. Element not found");
+        Console.WriteLine("Delete is imposible. Element not found");
         return;
     }
 
@@ -391,7 +390,7 @@ static void DeleteStudentById(ref Student[] students, int id)
 
     if (indexDelete == -1)
     {
-        Console.WriteLine("Dele is imposible. Element not found");
+        Console.WriteLine("Delete is imposible. Element not found");
         return;
     }
 
@@ -538,7 +537,7 @@ while (runProgram)
             {
                 if (CheckemptyMas(students))
                 {
-                    int position = InputInt("Input position for insert");
+                    int position = InputInt("Input position for insert: ");
 
                     Student student = CreateStudent(ref Current_ID, true);
                     InsertStudentIntoPosition(ref students, position, student);
@@ -556,12 +555,13 @@ while (runProgram)
             {
                 if (CheckemptyMas(students))
                 {
-                    int id = InputInt("Enter id student");
+                    int id = InputInt("Enter id student: ");
                     Student student;
                     bool isFinded = FindStudentById(students, id, out student);
 
                     if (isFinded)
                     {
+                        Console.WriteLine("{0, -3}{1, -15}{2, -15}{3, -5}{4, -5}{5, -5}{6, -4}", "Id", "Name", "Surname", "Class", "Oge", "Ege", "AverageScore");
                         PrintStudent(student);
                     }
                     else
