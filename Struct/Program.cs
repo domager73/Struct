@@ -231,7 +231,7 @@ Student[] FindStudentsFromMintoMaxEge(Student[] students, int minEge, int maxEge
     return findStudents;
 }
 
-bool CheckemptyMas(Student[] students)
+bool CheckEmptyMas(Student[] students)
 {
     if (students == null)
     {
@@ -298,7 +298,7 @@ void SortStudentsByID(Student[] students)
         {
             bool compareResult;
 
-            if (compareResult = students[i + 1].AverageScore < students[i].AverageScore)
+            if (compareResult = students[i + 1].Id < students[i].Id)
             {
                 temp = students[i];
                 students[i] = students[i + 1];
@@ -313,6 +313,48 @@ void SortStudentsByID(Student[] students)
 
     } while (!sort);
 }
+
+void SortStudentsByClass(Student[] students, bool asc)
+{
+    Student temp;
+    bool sort;
+    int offset = 0;
+    int idCount = 1;
+
+    do
+    {
+        sort = true;
+
+        for (int i = 0; i < students.Length - 1 - offset; i++)
+        {
+            bool compareResult;
+
+            if (asc)
+            {
+                compareResult = students[i + 1].Class < students[i].Class;
+            }
+            else
+            {
+                compareResult = students[i + 1].Class > students[i].Class;
+            }
+
+            if (compareResult)
+            {
+                temp = students[i];
+                students[i] = students[i + 1];
+                students[i + 1] = temp;
+
+                idCount++;
+                sort = false;
+            }
+        }
+
+        offset++;
+
+    } while (!sort);
+}
+
+
 #endregion
 
 #region Interfes Method
@@ -342,7 +384,9 @@ void PrintSortMenu()
 {
     Console.WriteLine("1. Sort by ascending average score");
     Console.WriteLine("2. Sort by decreasing average score");
-    Console.WriteLine("3. Bring everything back");
+    Console.WriteLine("3. Sort by ascending class");
+    Console.WriteLine("4. Sort by decreasing class");
+    Console.WriteLine("5. Bring everything back");
     Console.WriteLine("0. Exit");
 }
 
@@ -491,7 +535,7 @@ while (runProgram)
 
         case 2:
             {
-                if (CheckemptyMas(students))
+                if (CheckEmptyMas(students))
                 {
                     int id = InputInt("Ibput id for delete: ");
                     DeleteStudentById(ref students, id);
@@ -506,7 +550,7 @@ while (runProgram)
 
         case 3:
             {
-                if (CheckemptyMas(students))
+                if (CheckEmptyMas(students))
                 {
                     ClearAllStudents(ref students);
                 }
@@ -520,7 +564,7 @@ while (runProgram)
 
         case 4:
             {
-                if (CheckemptyMas(students))
+                if (CheckEmptyMas(students))
                 {
                     int id = InputInt("Ibput id for update: ");
                     Student student = CreateStudent(ref Current_ID, false);
@@ -535,7 +579,7 @@ while (runProgram)
             }
         case 5:
             {
-                if (CheckemptyMas(students))
+                if (CheckEmptyMas(students))
                 {
                     int position = InputInt("Input position for insert: ");
 
@@ -553,7 +597,7 @@ while (runProgram)
 
         case 6:
             {
-                if (CheckemptyMas(students))
+                if (CheckEmptyMas(students))
                 {
                     int id = InputInt("Enter id student: ");
                     Student student;
@@ -579,7 +623,7 @@ while (runProgram)
 
         case 7:
             {
-                if (CheckemptyMas(students))
+                if (CheckEmptyMas(students))
                 {
                     bool runSortMenu = true;
 
@@ -620,6 +664,20 @@ while (runProgram)
                                     break;
                                 }
 
+                            case 4:
+                                {
+                                    SortStudentsByClass(students, true);
+
+                                    break;
+                                }
+
+                            case 5: 
+                                {
+                                    SortStudentsByClass(students, false);
+
+                                    break;
+                                }
+
                         }
                     }
                 }
@@ -632,7 +690,7 @@ while (runProgram)
 
         case 8:
             {
-                if (CheckemptyMas(students))
+                if (CheckEmptyMas(students))
                 {
                     bool runSearchMenu = true;
 
@@ -656,7 +714,7 @@ while (runProgram)
 
                             case 1:
                                 {
-                                    if (CheckemptyMas(students))
+                                    if (CheckEmptyMas(students))
                                     {
                                         int minInOge = GetMinOge(students);
 
@@ -684,7 +742,7 @@ while (runProgram)
                                 }
                             case 2:
                                 {
-                                    if (CheckemptyMas(students))
+                                    if (CheckEmptyMas(students))
                                     {
                                         int minInEge = GetMinEge(students);
 
@@ -713,7 +771,7 @@ while (runProgram)
 
                             case 3:
                                 {
-                                    if (CheckemptyMas(students))
+                                    if (CheckEmptyMas(students))
                                     {
                                         Student[] findedStudents = FindStudentLeaveSchool(students);
 
