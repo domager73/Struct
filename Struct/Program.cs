@@ -1,7 +1,5 @@
 ﻿using NewStudent;
-using System.ComponentModel;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 
 int Current_ID = 0;
 
@@ -219,7 +217,6 @@ Student CreateEmptyStudent()
     student.SurName = "";
 
     return student;
-
 }
 
 void PrintStudent(Student student)
