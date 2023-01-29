@@ -42,6 +42,8 @@ Student[] ReadManyStudentsFromFile(Student[] students1, string nameFile, Student
             students[i].Oge = int.Parse(reader.ReadLine());
             students[i].Ege = int.Parse(reader.ReadLine());
             students[i].AverageScore = (students[i].Oge + students[i].Ege) / 2;
+
+            Current_ID = i + 1;
         }
     }
     else
@@ -72,6 +74,7 @@ Student[] ReadManyStudentsFromFile(Student[] students1, string nameFile, Student
             students[newId].AverageScore = (students[newId].Oge + students[newId].Ege) / 2;
 
             newId++;
+            Current_ID = i + 1;
         }
     }
     reader.Close();
@@ -307,11 +310,11 @@ Student[] FindStudentLeaveSchool(Student[] students)
 {
     Student[] findStudents = null;
 
-    int minPassingScore = 30;
+    int minPassingScore = 45;
 
     for (int i = 0; i < students.Length; i++)
     {
-        if (students[i].Oge > minPassingScore)
+        if (students[i].AverageScore > minPassingScore)
         {
             AddNewStudent(ref findStudents, students[i]);
 
