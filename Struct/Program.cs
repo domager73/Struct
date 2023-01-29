@@ -19,6 +19,84 @@ static void ResizeArray(ref Student[] students, int newLength)
 
     students = newArray;
 }
+
+Student[] ReadManyStudentsFromFile(Student[] students1, string nameFile, Student[] students = null)
+{
+    StreamReader reader = new StreamReader(nameFile);
+
+    int newId = 0;
+
+    int countProducts = int.Parse(reader.ReadLine());
+    Current_ID = int.Parse(reader.ReadLine());
+
+    if (students1 == null)
+    {
+        students = new Student[countProducts];
+
+        for (int i = 0; i < countProducts; i++)
+        {
+            students[i].Id = i + 1;
+            students[i].Name = reader.ReadLine();
+            students[i].SurName = reader.ReadLine();
+            students[i].Class = int.Parse(reader.ReadLine());
+            students[i].Oge = int.Parse(reader.ReadLine());
+            students[i].Ege = int.Parse(reader.ReadLine());
+            students[i].AverageScore = (students[i].Oge + students[i].Ege) / 2;
+        }
+    }
+    else
+    {
+        students = new Student[countProducts + students1.Length];
+
+        for (int i = 0; i < students1.Length; i++)
+        {
+            students[i].Id = newId + 1;
+            students[i].Name = students1[i].Name;
+            students[i].SurName = students1[i].SurName;
+            students[i].Class = students1[i].Class;
+            students[i].Oge = students1[i].Oge;
+            students[i].Ege = students1[i].Ege;
+            students[i].AverageScore = (students1[i].Oge + students1[i].Ege) / 2;
+
+            newId++;
+        }
+
+        for (int i = students1.Length; i < countProducts + students1.Length; i++)
+        {
+            students[newId].Id = newId + 1;
+            students[newId].Name = reader.ReadLine();
+            students[newId].SurName = reader.ReadLine();
+            students[newId].Class = int.Parse(reader.ReadLine());
+            students[newId].Oge = int.Parse(reader.ReadLine());
+            students[newId].Ege = int.Parse(reader.ReadLine());
+            students[newId].AverageScore = (students[newId].Oge + students[newId].Ege) / 2;
+
+            newId++;
+        }
+    }
+    reader.Close();
+
+    return students;
+}
+
+void SaveManyStudentsToFile(Student[] students, string fileName, int Current_ID)
+{
+    StreamWriter write = new StreamWriter(fileName);
+
+    write.WriteLine(students.Length);
+    write.WriteLine(Current_ID);
+
+    for (int i = 0; i < students.Length; i++)
+    {
+        write.WriteLine(students[i].Name);
+        write.WriteLine(students[i].SurName);
+        write.WriteLine(students[i].Class);
+        write.WriteLine(students[i].Oge);
+        write.WriteLine(students[i].Ege);
+    }
+
+    write.Close();
+}
 # endregion 
 
 #region tools Methods
@@ -192,84 +270,6 @@ void PrintManyStudentsToFile(Student[] students, string fileName)
     }
 
     writer.Close();
-}
-
-void SaveManyStudentsToFile(Student[] students, string fileName, int Current_ID)
-{
-    StreamWriter write = new StreamWriter(fileName);
-
-    write.WriteLine(students.Length);
-    write.WriteLine(Current_ID);
-
-    for (int i = 0; i < students.Length; i++)
-    {
-        write.WriteLine(students[i].Name);
-        write.WriteLine(students[i].SurName);
-        write.WriteLine(students[i].Class);
-        write.WriteLine(students[i].Oge);
-        write.WriteLine(students[i].Ege);
-    }
-
-    write.Close();
-}
-
-Student[] ReadManyStudentsFromFile(Student[] students1,string nameFile, Student[] students = null) 
-{
-    StreamReader reader = new StreamReader(nameFile);
-
-    int newId = 0;
-
-    int countProducts = int.Parse(reader.ReadLine());
-    Current_ID= int.Parse(reader.ReadLine());
-
-    if (students1 == null)
-    {
-        students = new Student[countProducts];
-
-        for (int i = 0; i < countProducts; i++)
-        {
-            students[i].Id = i + 1;
-            students[i].Name = reader.ReadLine();
-            students[i].SurName = reader.ReadLine();
-            students[i].Class = int.Parse(reader.ReadLine());
-            students[i].Oge = int.Parse(reader.ReadLine());
-            students[i].Ege = int.Parse(reader.ReadLine());
-            students[i].AverageScore = (students[i].Oge + students[i].Ege) / 2;
-        }
-    }
-    else
-    {
-        students = new Student[countProducts + students1.Length];
-
-        for (int i = 0; i < students1.Length; i++)
-        {
-            students[i].Id = newId + 1;
-            students[i].Name = students1[i].Name;
-            students[i].SurName = students1[i].SurName;
-            students[i].Class = students1[i].Class;
-            students[i].Oge = students1[i].Oge;
-            students[i].Ege = students1[i].Ege;
-            students[i].AverageScore = (students1[i].Oge + students1[i].Ege) / 2;
-
-            newId++;
-        }
-
-        for (int i = students1.Length; i < countProducts + students1.Length; i++)
-        {
-            students[newId].Id = newId + 1;
-            students[newId].Name = reader.ReadLine();
-            students[newId].SurName = reader.ReadLine();
-            students[newId].Class = int.Parse(reader.ReadLine());
-            students[newId].Oge = int.Parse(reader.ReadLine());
-            students[newId].Ege = int.Parse(reader.ReadLine());
-            students[newId].AverageScore = (students[newId].Oge + students[newId].Ege) / 2;
-
-            newId++;
-        }
-    }
-    reader.Close();
-
-    return students;
 }
 
     bool FindStudentById(Student[] students, int id, out Student student)
